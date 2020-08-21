@@ -96,7 +96,16 @@ public:
 			cout << endl;
 		}
 	}
-
+	
+	bool isClear() {
+		for(auto bd : board) {
+			for(auto b : bd) {
+				if(b == 'E')
+					return false;
+			}
+		}
+		return true;
+	}
 private:
 	vector<vector<char>> board;
     vector<vector<int>> visit;
@@ -109,17 +118,30 @@ private:
 };
 
 
-int main() 
+int main(int argc, char *argv[]) 
 {
-	Minesweeper minesweeper(10, 10);
-	minesweeper.showBoard();
+	int length, width;
 	pair<int, int> click;
 	bool result = true;
-	while(result) {
+	
+	if(argc != 3) {
+		cout << "Usage: " << argv[0] << "length width" <<endl;
+	}
+	
+	length = atoi(argv[1]);
+	width = atoi(argv[2]);
+
+	Minesweeper minesweeper(length, width);
+	minesweeper.showBoard();
+
+	while(!minesweeper.isClear() && result) {
 		cin >> click.first >> click.second;
 		result = minesweeper.updateBoard(click);
 		minesweeper.showBoard();
 	}
+	
+	if(minesweeper.isClear()) cout << "You Win!" << endl;
+	else cout << "Boom!" << endl;
 
 	return 0;
 }
