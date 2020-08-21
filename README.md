@@ -1,4 +1,4 @@
- MineSweeper 扫雷
+# MineSweeper 扫雷
 
 
 ## Introduction
