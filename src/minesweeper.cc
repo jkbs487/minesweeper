@@ -98,14 +98,24 @@ public:
 	}
 	
 	bool isClear() {
-		for(auto bd : board) {
-			for(auto b : bd) {
-				if(b == 'E')
+		for(int i = 0; i < length_; i++) {
+			for(int j = 0; j < width_; j++) {
+				if(board[i][j] == 'E' && !isMine(i, j)) 
 					return false;
 			}
 		}
 		return true;
 	}
+	
+	void showResult() {
+		for(int i = 0; i < length_; i++) {
+			for(int j = 0; j < width_; j++) {
+				if(board[i][j] == 'E' && isMine(i, j)) 
+					board[i][j] = 'M';
+			}		
+		}
+	}
+
 private:
 	vector<vector<char>> board;
     vector<vector<int>> visit;
@@ -130,18 +140,29 @@ int main(int argc, char *argv[])
 	
 	length = atoi(argv[1]);
 	width = atoi(argv[2]);
+    
+    if(length < 0 || length > 40 || width < 0 || width > 40) {
+        cout << "Please input length or width in 0 ~ 40" << endl;   
+        return 0;
+    }
 
 	Minesweeper minesweeper(length, width);
 	minesweeper.showBoard();
 
 	while(!minesweeper.isClear() && result) {
 		cin >> click.first >> click.second;
+        if(click.first >= length || click.second >= width) {
+            cout << "wrong pos!" << endl;
+            continue;
+        }
 		result = minesweeper.updateBoard(click);
 		minesweeper.showBoard();
 	}
 	
 	if(minesweeper.isClear()) cout << "You Win!" << endl;
 	else cout << "Boom!" << endl;
+	minesweeper.showResult();
+	minesweeper.showBoard();
 
 	return 0;
 }
