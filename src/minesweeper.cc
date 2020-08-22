@@ -11,28 +11,37 @@ public:
 	Minesweeper(int length, int width): length_(length), width_(width) {
 		srand(time(0));
 		boardInit(4);
-		vector<vector<int>> temp(length_, vector<int>(width_));		
+		vector<vector<int>> temp(length_+2, vector<int>(width_+2));		
 		visit = temp;
 	}
 
 	Minesweeper(int length, int width, int minesNum): length_(length), width_(width) {
 		srand(time(0));
 		boardInit(minesNum);
-		vector<vector<int>> temp(length_, vector<int>(width_));		
+		vector<vector<int>> temp(length_+2, vector<int>(width_+2));		
 		visit = temp;
 	}
 
 	void boardInit(int minesNum) {
-		vector<vector<char>> temp (length_, vector<char>(width_, 'E'));		
+		vector<vector<char>> temp (length_+2, vector<char>(width_+2, 'E'));		
 		board = temp;
+        for(int i = 1; i < length_ + 1; i++) {
+            board[0][i] = i + '0';
+            board[length_+1][i] = i + '0';
+        }
+        for(int i = 1; i < width_ + 1; i++) {
+            board[i][0] = i + '0';
+            board[i][width_+1] = i + '0';
+        }
+        board[0][0] = board[0][width_+1] = board[length_+1][0] = board[length_+1][width_+1] = '*';
 		while(minesNum-- > 0) {
 			mines.push_back(getMinePos());
 		}
 	}
 
 	pair<int, int> getMinePos() {
-		int x = rand() % length_;
-		int y = rand() % width_;
+		int x = rand() % length_ + 1;
+		int y = rand() % width_ + 1;
 		
 		return {x, y};
 	}
@@ -49,14 +58,14 @@ public:
 
     int compute(int x, int y) {
         int sum = 0;
-        if(x-1 >= 0 && isMine(x-1, y)) sum++;
-        if(y-1 >= 0 && isMine(x, y-1)) sum++;
-        if(x+1 < length_ && isMine(x+1, y)) sum++;
-        if(y+1 < width_ && isMine(x, y+1)) sum++;
-        if(x-1 >= 0 && y-1 >= 0 && isMine(x-1, y-1)) sum++;
-        if(x-1 >= 0 && y+1 < width_ && isMine(x-1, y+1)) sum++;
-        if(x+1 < length_ && y-1 >= 0 && isMine(x+1, y-1)) sum++;
-        if(x+1 < length_ && y+1 < width_ && isMine(x+1, y+1)) sum++;
+        if(x-1 > 0 && isMine(x-1, y)) sum++;
+        if(y-1 > 0 && isMine(x, y-1)) sum++;
+        if(x+1 < length_+1 && isMine(x+1, y)) sum++;
+        if(y+1 < width_+1 && isMine(x, y+1)) sum++;
+        if(x-1 > 0 && y-1 > 0 && isMine(x-1, y-1)) sum++;
+        if(x-1 > 0 && y+1 < width_+1 && isMine(x-1, y+1)) sum++;
+        if(x+1 < length_+1 && y-1 > 0 && isMine(x+1, y-1)) sum++;
+        if(x+1 < length_+1 && y+1 < width_+1 && isMine(x+1, y+1)) sum++;
         return sum;
     }
 
@@ -69,21 +78,21 @@ public:
 	}
 
     void solve(int x, int y) {
-        if(x >= length_ || x < 0 || y >= width_ || y < 0 || board[x][y] != 'E') 
+        if(x > length_ || x < 1 || y > width_ || y < 1 || board[x][y] != 'E') 
             return;
         int sum = compute(x, y);
         if(sum > 0) board[x][y] = sum + '0';
         else board[x][y] = 'B';
         visit[x][y] = 1;
         if(board[x][y] == 'B') {
-            if(x-1 >= 0 && !visit[x-1][y]) solve(x-1, y);
-            if(y-1 >= 0 && !visit[x][y-1]) solve(x, y-1);
-            if(x+1 < board.size() && !visit[x+1][y]) solve(x+1, y);
-            if(y+1 < board[0].size() && !visit[x][y+1]) solve(x, y+1);
-            if(x-1 >= 0 && y-1 >= 0 && !visit[x-1][y-1]) solve(x-1, y-1);
-            if(x-1 >= 0 && y+1 < board[0].size() && !visit[x-1][y+1]) solve(x-1, y+1);
-            if(x+1 < board.size() && y-1 >= 0 && !visit[x+1][y-1]) solve(x+1, y-1);
-            if(x+1 < board.size() && y+1 < board[0].size() && !visit[x+1][y+1]) solve(x+1, y+1);
+            if(x-1 > 0 && !visit[x-1][y]) solve(x-1, y);
+            if(y-1 > 0 && !visit[x][y-1]) solve(x, y-1);
+            if(x+1 < length_+1 && !visit[x+1][y]) solve(x+1, y);
+            if(y+1 < width_+1 && !visit[x][y+1]) solve(x, y+1);
+            if(x-1 > 0 && y-1 > 0 && !visit[x-1][y-1]) solve(x-1, y-1);
+            if(x-1 > 0 && y+1 < width_+1 && !visit[x-1][y+1]) solve(x-1, y+1);
+            if(x+1 < length_+1 && y-1 > 0 && !visit[x+1][y-1]) solve(x+1, y-1);
+            if(x+1 < length_+1 && y+1 < width_+1 && !visit[x+1][y+1]) solve(x+1, y+1);
         }
         return;
     }
