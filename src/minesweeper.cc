@@ -4,21 +4,18 @@
 #include <ctime>
 #include "minesweeper.h"
 
-Minesweeper::Minesweeper(int length, int width): length_(length), width_(width) {
-	srand(time(0));
-	boardInit(length);
-	visit = vector<vector<int>> (length_+2, vector<int>(width_+2));		
+
+Minesweeper::Minesweeper(int length, int width): length_(length), width_(width), board(vector<vector<char>>(length+2, vector<char>(width+2, 'E'))), visit(vector<vector<int>> (length+2, vector<int>(width+2))) {
+    srand(time(0));
+    boardInit(length);
 }
 
-Minesweeper::Minesweeper(int length, int width, int minesNum): length_(length), width_(width) {
-	srand(time(0));
-	boardInit(minesNum);
-	visit = vector<vector<int>> (length_+2, vector<int>(width_+2));		
+Minesweeper::Minesweeper(int length, int width, int minesNum): length_(length), width_(width), board(vector<vector<char>>(length+2, vector<char>(width+2, 'E'))), visit(vector<vector<int>> (length+2, vector<int>(width+2)))  {
+    srand(time(0));
+    boardInit(minesNum);
 }
 
 void Minesweeper::boardInit(int minesNum) {
-	board = vector<vector<char>>(length_+2, vector<char>(width_+2, 'E'));		
-    
     for(int i = 1; i < length_ + 1; i++) {
         board[0][i] = i + '0';
         board[length_+1][i] = i + '0';
@@ -26,66 +23,73 @@ void Minesweeper::boardInit(int minesNum) {
     for(int i = 1; i < width_ + 1; i++) {
         board[i][0] = i + '0';
         board[i][width_+1] = i + '0';
-     }
+    }
     board[0][0] = board[0][width_+1] = board[length_+1][0] = board[length_+1][width_+1] = '*';
-	while(minesNum-- > 0) {
-		mines.push_back(getMinePos());
-	}
+    while(minesNum-- > 0) {
+        mines.push_back(getMinePos());
+    }
+    
+    direction.push_back({0, 1});
+    direction.push_back({0, -1});
+    direction.push_back({1, 0});
+    direction.push_back({-1, 0});
+    direction.push_back({1, 1});
+    direction.push_back({1, -1});
+    direction.push_back({-1, 1});
+    direction.push_back({-1, -1});
 }
 
-pair<int, int> Minesweeper::getMinePos() {
-	int x = rand() % length_ + 1;
-	int y = rand() % width_  + 1;
-	return {x, y};
+Minesweeper::Pos Minesweeper::getMinePos() {
+    Minesweeper::Pos pos;
+    pos.x = rand() % length_ + 1;
+    pos.y = rand() % width_  + 1;
+    return pos;
 }
 
-bool Minesweeper::updateBoard(pair<int, int> click) {
-    int x = click.first, y = click.second;
-    if(isMine(x, y)) {
-        board[x][y] = 'X';
+bool Minesweeper::updateBoard(Minesweeper::Pos click) {
+    if(isMine(click)) {
+        board[click.x][click.y] = 'X';
         return false;
     }
-    solve(x, y);
+    solve(click);
     return true;
 }
 
-int Minesweeper::compute(int x, int y) {
-    int sum = 0;
-    if(x-1 > 0 && isMine(x-1, y)) sum++;
-    if(y-1 > 0 && isMine(x, y-1)) sum++;
-    if(x+1 < length_+1 && isMine(x+1, y)) sum++;
-    if(y+1 < width_+1 && isMine(x, y+1)) sum++;
-    if(x-1 > 0 && y-1 > 0 && isMine(x-1, y-1)) sum++;
-    if(x-1 > 0 && y+1 < width_+1 && isMine(x-1, y+1)) sum++;
-    if(x+1 < length_+1 && y-1 > 0 && isMine(x+1, y-1)) sum++;
-    if(x+1 < length_+1 && y+1 < width_+1 && isMine(x+1, y+1)) sum++;
-    return sum;
+int Minesweeper::computeMines(const Minesweeper::Pos pos) {
+    int mines = 0;
+    Minesweeper::Pos tempPos;
+    for(pair<int, int> dir : direction) {
+        tempPos.x = dir.first + pos.x;
+        tempPos.y = dir.second + pos.y;
+        if(tempPos.x > 0 && tempPos.x < length_+1 && tempPos.y > 0 && tempPos.y < width_+1 && isMine(tempPos)) 
+            mines++;
+    }
+    return mines;
 }
 
-bool Minesweeper::isMine(const int x, const int y) {
+bool Minesweeper::isMine(const Minesweeper::Pos pos) {
     for(auto mine : mines) {
-        if(mine.first == x && mine.second == y)
+        if(mine.x == pos.x && mine.y == pos.y)
             return true;
     }
     return false;
 }
 
-void Minesweeper::solve(const int x, const int y) const {
-    if(x > length_ || x < 1 || y > width_ || y < 1 || board[x][y] != 'E') 
+void Minesweeper::solve(Minesweeper::Pos curpos) {
+    if(curpos.x > length_ || curpos.x < 1 || curpos.y > width_ || curpos.y < 1 || board[curpos.x][curpos.y] != 'E') 
         return;
-    int sum = compute(x, y);
-    if(sum > 0) board[x][y] = sum + '0';
-    else board[x][y] = 'B';
-    visit[x][y] = 1;
-    if(board[x][y] == 'B') {
-        if(x-1 > 0 && !visit[x-1][y]) solve(x-1, y);
-        if(y-1 > 0 && !visit[x][y-1]) solve(x, y-1);
-        if(x+1 < length_+1 && !visit[x+1][y]) solve(x+1, y);
-        if(y+1 < width_+1 && !visit[x][y+1]) solve(x, y+1);
-        if(x-1 > 0 && y-1 > 0 && !visit[x-1][y-1]) solve(x-1, y-1);
-        if(x-1 > 0 && y+1 < width_+1 && !visit[x-1][y+1]) solve(x-1, y+1);
-        if(x+1 < length_+1 && y-1 > 0 && !visit[x+1][y-1]) solve(x+1, y-1);
-        if(x+1 < length_+1 && y+1 < width_+1 && !visit[x+1][y+1]) solve(x+1, y+1);
+    int sum = computeMines(curpos);
+    Minesweeper::Pos tempPos;
+    if(sum > 0) board[curpos.x][curpos.y] = sum + '0';
+    else board[curpos.x][curpos.y] = 'B';
+    visit[curpos.x][curpos.y] = 1;
+    if(board[curpos.x][curpos.y] == 'B') {
+        for(pair<int, int> dir : direction) {
+            tempPos.x = dir.first + curpos.x;
+            tempPos.y = dir.second + curpos.y;
+            if(tempPos.x > 0 && tempPos.x < length_+1 && tempPos.y > 0 && tempPos.y < width_+1 && !visit[tempPos.x][tempPos.y]) 
+                solve(tempPos);
+        }
     }
     return;
 }
@@ -100,19 +104,25 @@ void Minesweeper::showBoard() const {
 }
 
 bool Minesweeper::isClear() {
+    Minesweeper::Pos curpos;
     for(int i = 1; i <= length_; i++) {
         for(int j = 1; j <= width_; j++) {
-            if(board[i][j] == 'E' && !isMine(i, j)) 
+            curpos.x = i;
+            curpos.y = j;
+            if(board[i][j] == 'E' && !isMine(curpos)) 
                 return false;
         }
     }
     return true;
 }
 
-void Minesweeper::showResult() {
+void Minesweeper::showMines() {
+    Minesweeper::Pos curpos;
     for(int i = 1; i <= length_; i++) {
         for(int j = 1; j <= width_; j++) {
-            if(board[i][j] == 'E' && isMine(i, j)) 
+            curpos.x = i;
+            curpos.y = j;
+            if(board[i][j] == 'E' && isMine(curpos)) 
                 board[i][j] = 'M';
         }		
     }
@@ -121,7 +131,7 @@ void Minesweeper::showResult() {
 int main(int argc, char *argv[]) 
 {
     int length, width;
-    pair<int, int> click;
+    Minesweeper::Pos click;
     bool result = true;
 
     if(argc != 3) {
@@ -140,8 +150,8 @@ int main(int argc, char *argv[])
     minesweeper.showBoard();
 
     while(!minesweeper.isClear() && result) {
-        cin >> click.first >> click.second;
-        if(click.first > length || click.second > width) {
+        cin >> click.x >> click.y;
+        if(click.x > length || click.y > width) {
             cout << "wrong pos!" << endl;
             continue;
         }
@@ -151,7 +161,7 @@ int main(int argc, char *argv[])
 
     if(minesweeper.isClear()) cout << "You Win!" << endl;
     else cout << "Boom!" << endl;
-    minesweeper.showResult();
+    minesweeper.showMines();
     minesweeper.showBoard();
 
     return 0;
