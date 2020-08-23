@@ -5,6 +5,10 @@
 
 using namespace std;
 
+static const char wall = '+';
+static const char empty = 'O';
+static const char mine = '*';
+static const char black = ' ';
 
 class Minesweeper {
 public:
@@ -12,7 +16,7 @@ public:
         int x;
         int y;
     } Pos;
-
+    
     Minesweeper(int length, int width);
     Minesweeper(int length, int width, int minesNum);
 
@@ -31,7 +35,7 @@ private:
     void solve();
     bool isMine(const Pos pos);
     void boardInit(int minesNum);
-    Pos getMinePos();
+    void getMinePos(Pos &pos);
     int computeMines(const Pos pos);
     void solve(Pos pos);
 };
