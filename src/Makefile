@@ -3,7 +3,7 @@ CC = g++
 CFLAGS += -g 
 CFLAGS += -I$(PWD)/../include
 PROJECT = ../bin/minesweeper
-OBJS =  minesweeper.o
+OBJS =  minesweeper.o main.o
 
 all: $(OBJS) $(PROJECT)
 
