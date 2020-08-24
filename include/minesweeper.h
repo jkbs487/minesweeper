@@ -6,7 +6,7 @@
 using namespace std;
 
 static const char wall = '+';
-static const char empty = 'O';
+static const char empty = '@';
 static const char mine = '*';
 static const char black = ' ';
 

@@ -6,5 +6,5 @@ PROJECT=minesweeper
 
 make clean
 make
-echo "----------------start-------------------"
+echo "*************************start*************************"
 ./bin/${PROJECT} 
