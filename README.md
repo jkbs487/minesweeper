@@ -5,7 +5,7 @@
 
 最近LeetCode上做了一道扫雷相关的算法题，于是就想做一个扫雷的小项目...
 
-## Envoirment
+## Environment
 
 - OS：Ubuntu 20.04
 - Complier: g++ 9.3.0
