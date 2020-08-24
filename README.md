@@ -12,7 +12,7 @@
 
 ## Build
 
-./start.sh [length] [width]
+./start.sh
 
 ## Version
 
