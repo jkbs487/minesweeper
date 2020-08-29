@@ -5,13 +5,9 @@
 #include "minesweeper.h"
 
 
-Minesweeper::Minesweeper(int length, int width): length_(length), width_(width), board(vector<vector<char>>(length+2, vector<char>(width+2, empty))), visit(vector<vector<int>> (length+2, vector<int>(width+2))) {
-    srand(time(0));
-    boardInit(length);
-}
-
 Minesweeper::Minesweeper(int length, int width, int minesNum): length_(length), width_(width), board(vector<vector<char>>(length+2, vector<char>(width+2, empty))), visit(vector<vector<int>> (length+2, vector<int>(width+2)))  {
     srand(time(0));
+    direction = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};   
     boardInit(minesNum);
 }
 
@@ -29,15 +25,6 @@ void Minesweeper::boardInit(int minesNum) {
         getMinePos(pos);
         mines.push_back(pos);
     }
-    
-    direction.push_back({0, 1});
-    direction.push_back({0, -1});
-    direction.push_back({1, 0});
-    direction.push_back({-1, 0});
-    direction.push_back({1, 1});
-    direction.push_back({1, -1});
-    direction.push_back({-1, 1});
-    direction.push_back({-1, -1});
 }
 
 void Minesweeper::getMinePos(Minesweeper::Pos& pos) {

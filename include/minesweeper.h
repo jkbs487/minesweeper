@@ -17,7 +17,6 @@ public:
         int y;
     } Pos;
     
-    Minesweeper(int length, int width);
     Minesweeper(int length, int width, int minesNum);
 
     bool updateBoard(Pos click);
