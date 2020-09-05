@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     while(reset == "y") {
         cout << "--------------------------------------" << endl;
         cout << "      Please choose a level:          " << endl;
-        cout << "  1 low level 8*8 size 10 mine        " << endl;
+        cout << "  1 low level 8*8 size 10 mines       " << endl;
         cout << "  2 middle level 16*16 size 40 mines  " << endl;
         cout << "  3 high level 30*16 size 99 mines    " << endl;
         cout << "  4 custom                            " << endl;
