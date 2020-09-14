@@ -2,12 +2,13 @@
 #include <iostream>
 #include <string>
 
+using namespace Minesweeper;
 using namespace std;
 
 int main(int argc, char *argv[]) 
 {
     int length, width, mines;
-    Minesweeper::Pos click;
+    Pos click;
     int level;
     string reset = "y";
     bool result = true;
@@ -50,9 +51,9 @@ int main(int argc, char *argv[])
             return 1;
         }
 
-        Minesweeper minesweeper(length, width, mines);
-        while(!minesweeper.isClear() && result) {
-            minesweeper.showBoard();
+        Board board(length, width, mines);
+        while(!board.isClear() && result) {
+            board.showBoard();
             cout << "click x(1-" << length <<  "): ";
             cin >> click.x;
             cout << "click y(1-" << width <<  "): ";
@@ -67,11 +68,11 @@ int main(int argc, char *argv[])
                 cout << "wrong pos!" << endl;
                 continue;
             }
-            result = minesweeper.updateBoard(click);
+            result = board.updateBoard(click);
         }
-        minesweeper.showMines();
-        minesweeper.showBoard();
-        if(minesweeper.isClear()) {
+        board.showMines();
+        board.showBoard();
+        if(board.isClear()) {
             cout << "--------------------------------------------" << endl;
             cout << "                  You Win!                  " << endl;
             cout << "--------------------------------------------" << endl;
